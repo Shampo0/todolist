@@ -1,19 +1,45 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, TouchableHighlight, TouchableNativeFeedback, Pressable } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, TouchableHighlight, TouchableNativeFeedback, Pressable ,TextInput, ScrollView} from 'react-native';
 import { theme } from './colors';
 
 export default function App() {
+  const [working, setWorking] = useState(true);
+  const [text, setText] = useState("");
+  const [toDos, setToDos] = useState({});
+  const travel = () => setWorking(false);
+  const work = () => setWorking(true);
+  const onChangeText = (payload) => setText(payload);
+  const addTodo = () => {
+    if(text === ""){
+      return;
+    }
+    const newToDos = {...toDos, [Date.now()]: {text, work: working},};
+      setToDos(newToDos);
+      setText("");
+  };
+  console.log(toDos);
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       <View style={styles.header}>
-        <TouchableOpacity activeOpacity={0}>
-          <Text style={styles.btnText}>Work</Text>
+        <TouchableOpacity onPress={work}>
+          <Text style={{...styles.btnText, color: working ? "white": theme.grey}}>Work</Text>
         </TouchableOpacity>
-        <Pressable onPress={() => console.log("pressed")}>
-           <Text style={styles.btnText}>Travel</Text>
-        </Pressable>
+        <TouchableOpacity onPress={travel} >
+           <Text style={{...styles.btnText, color: !  working ? "white": theme.grey}}>Travel</Text>
+        </TouchableOpacity>
       </View>
+      <View>
+        <TextInput onSubmitEditing={addTodo} onChangeText={onChangeText} returnKeyType="done" value={text} placeholderTextColor="red" placeholder={working ? "Add a To do" : "Where do you want to go?"} style={styles.input}></TextInput>
+        <ScrollView>{Object.keys(toDos).map((key) =>(
+          <View style={styles.toDo} key={key}>
+          <Text style={styles.toDoText}>{toDos[key].text}</Text>
+        </View>
+        ))}
+        </ScrollView>
+      </View>
+
     </View>
   );
 }
@@ -33,6 +59,19 @@ const styles = StyleSheet.create({
     fontSize: 44,
     fontWeight: '600',
     color: "white",
-    
-  }
+  },
+  input:{
+    backgroundColor: "white",
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 30,
+    marginTop: 20,
+    fontSize: 18,
+  },
+  toDo:{
+    color: "white",
+  },
+  toDoText:{
+
+  },
 });
